@@ -29,8 +29,6 @@ import java.util.Map;
 @Component
 public class RpcServer implements ApplicationContextAware , InitializingBean {
 
-
-
     /**
      * 存放 服务名 与 服务对象 之间的映射关系
      */
