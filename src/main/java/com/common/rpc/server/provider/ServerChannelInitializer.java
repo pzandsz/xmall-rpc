@@ -19,11 +19,6 @@ import java.util.Map;
  */
 public class ServerChannelInitializer<T extends SocketChannel> extends ChannelInitializer<SocketChannel> {
 
-    private final Map<String, Object> handlerMap;
-
-    public ServerChannelInitializer(Map<String, Object> handlerMap) {
-        this.handlerMap = handlerMap;
-    }
 
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
@@ -33,6 +28,6 @@ public class ServerChannelInitializer<T extends SocketChannel> extends ChannelIn
         // 编码 RPC 响应
         pipeline.addLast(new RpcEncoder(RpcResponse.class));
         // 处理 RPC 请求
-        pipeline.addLast(new RpcServerHandler(handlerMap));
+        pipeline.addLast(new RpcServerHandler());
     }
 }

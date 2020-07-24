@@ -1,7 +1,6 @@
 package com.common.rpc.server.provider;
 
 import com.common.rpc.common.utils.BeanUtils;
-import com.common.rpc.register.impl.ZooKeeperServiceRegistry;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -9,12 +8,9 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 类说明:
@@ -24,13 +20,11 @@ import java.util.Map;
 @Slf4j
 public class RpcServerTask implements Runnable {
 
-    @Setter
-    private Map<String, Object> handlerMap = new HashMap<>();
 
     @SneakyThrows
     @Override
     public void run() {
-        System.out.println("thread: " + Thread.currentThread().getName());
+
         //开启RPC服务端,并将服务提供方注册到zk
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -40,7 +34,7 @@ public class RpcServerTask implements Runnable {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup);
             bootstrap.channel(NioServerSocketChannel.class);
-            bootstrap.childHandler(new ServerChannelInitializer<SocketChannel>(handlerMap));
+            bootstrap.childHandler(new ServerChannelInitializer<SocketChannel>());
             bootstrap.option(ChannelOption.SO_BACKLOG, 1024);
             bootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);
             // 获取 RPC 服务器的 IP 地址与端口号
@@ -55,7 +49,7 @@ public class RpcServerTask implements Runnable {
 
             // 启动 RPC 服务器
             ChannelFuture future = bootstrap.bind(port).sync();
-            // 关闭 RPC 服务器
+            // 关闭 RPC 服务器 服务提供方什么时候关闭？
             future.channel().closeFuture().sync();
 
         } catch (InterruptedException e) {

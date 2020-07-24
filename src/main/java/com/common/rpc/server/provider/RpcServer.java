@@ -1,6 +1,7 @@
 package com.common.rpc.server.provider;
 
 import com.common.rpc.common.utils.BeanUtils;
+import com.common.rpc.common.utils.StringUtils;
 import com.common.rpc.register.impl.ZooKeeperServiceRegistry;
 import com.common.rpc.server.annotation.RpcService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +25,10 @@ import java.util.Map;
 public class RpcServer implements ApplicationContextAware , InitializingBean {
 
     /**
-     * 存放 服务名 与 服务对象 之间的映射关系
+     * key:
+     * 服务名 => 服务对象
      */
-    private Map<String, Object> handlerMap = new HashMap<>();
+    public static Map<String, Object> handlerMap = new HashMap<>();
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -35,10 +37,14 @@ public class RpcServer implements ApplicationContextAware , InitializingBean {
         if (MapUtils.isNotEmpty(serviceBeanMap)) {
             for (Object serviceBean : serviceBeanMap.values()) {
                 RpcService rpcService = serviceBean.getClass().getAnnotation(RpcService.class);
-                String serviceName = rpcService.value().getName();
-
+                String serviceName = rpcService.clazz().getName();
+                String name = rpcService.name();
+                if(!StringUtils.isEmpty(name)){
+                    log.error("registry name is null");
+                    handlerMap.put(serviceName,serviceBean);
+                }
                 //将注有RpcService的实现类存放到map中
-                handlerMap.put(serviceName, serviceBean);
+                handlerMap.put(name,serviceBean);
             }
         }
     }
@@ -64,7 +70,6 @@ public class RpcServer implements ApplicationContextAware , InitializingBean {
             }
         }
         RpcServerTask rpcServerTask = new RpcServerTask();
-        rpcServerTask.setHandlerMap(handlerMap);
         Thread thread = new Thread(rpcServerTask);
         thread.setName("rpc-server");
         thread.start();

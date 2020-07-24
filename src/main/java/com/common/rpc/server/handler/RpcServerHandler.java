@@ -2,7 +2,7 @@ package com.common.rpc.server.handler;
 
 import com.common.rpc.common.domian.RpcRequest;
 import com.common.rpc.common.domian.RpcResponse;
-import com.common.rpc.common.utils.BeanUtils;
+import com.common.rpc.server.provider.RpcServer;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -11,9 +11,6 @@ import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.Map;
 
 /**
  * 类说明:
@@ -23,12 +20,6 @@ import java.util.Map;
 @Slf4j
 public class RpcServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
-
-    private final Map<String, Object> handlerMap;
-
-    public RpcServerHandler(Map<String, Object> handlerMap) {
-        this.handlerMap = handlerMap;
-    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcRequest msg) throws Exception {
@@ -50,9 +41,9 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
     private Object handle(RpcRequest request) throws InvocationTargetException {
         System.out.println("请求进来: " + request.getInterfaceName());
         //1.获取interfaceName对应的实现类数组,从Spring容器中获取
-        Object serviceBean = handlerMap.get(request.getInterfaceName());
+        Object serviceBean = RpcServer.handlerMap.get(request.getInterfaceName());
 
-        Class<?> serviceClass = handlerMap.get(request.getInterfaceName()).getClass();
+        Class<?> serviceClass = RpcServer.handlerMap.get(request.getInterfaceName()).getClass();
 
         String methodName = request.getMethod();
 
