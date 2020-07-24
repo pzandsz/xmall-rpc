@@ -1,12 +1,8 @@
 package com.common.rpc.client.consumer;
 
-import com.common.rpc.client.handler.RpcClientHandler;
 import com.common.rpc.client.handler.RpcInvocationHandler;
-import com.common.rpc.common.domian.RpcRequest;
-import com.common.rpc.common.domian.RpcResponse;
-import com.common.rpc.common.utils.BeanUtils;
-import com.common.rpc.register.ServiceDiscovery;
 import com.common.rpc.register.impl.ZooKeeperServiceDiscovery;
+import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -20,9 +16,10 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * RPC 代理（用于创建 RPC 服务代理）
  *
- * @author huangyong
+ * @author zengpeng
  * @since 1.0.0
  */
+@Data
 @Slf4j
 public class RpcConsumerBean implements ApplicationContextAware, FactoryBean<Object> {
 
@@ -33,37 +30,7 @@ public class RpcConsumerBean implements ApplicationContextAware, FactoryBean<Obj
 
     private String centerAddress;
 
-    public String getCenterAddress() {
-        return centerAddress;
-    }
 
-    public void setCenterAddress(String centerAddress) {
-        this.centerAddress = centerAddress;
-    }
-
-    public String getProxy() {
-        return proxy;
-    }
-
-    public void setProxy(String proxy) {
-        this.proxy = proxy;
-    }
-
-    public Class<?> getInterfaceClazz() {
-        return interfaceClazz;
-    }
-
-    public void setInterfaceClazz(Class<?> interfaceClazz) {
-        this.interfaceClazz = interfaceClazz;
-    }
-
-    public String getInterfaceName() {
-        return interfaceName;
-    }
-
-    public void setInterfaceName(String interfaceName) {
-        this.interfaceName = interfaceName;
-    }
 
     public ConcurrentHashMap<String,String> pathMap = new ConcurrentHashMap<>();
 
@@ -89,13 +56,19 @@ public class RpcConsumerBean implements ApplicationContextAware, FactoryBean<Obj
     }
 
     @Override
-    public Object getObject() throws Exception {
-        //1.读取远程中心地址,BeanUtils读取不到配置文件，为什么?
+    public Object getObject() throws ClassNotFoundException {
+        //1.服务发现，远程实现
         ZooKeeperServiceDiscovery serviceDiscovery = new ZooKeeperServiceDiscovery(centerAddress);
 
-        interfaceClazz = Class.forName(interfaceName);
+        //2.获得Class对象
+        try {
+            interfaceClazz = Class.forName(interfaceName);
+        } catch (ClassNotFoundException e) {
+            log.error("can not get Class from the name :{} , e:{}",interfaceName,e);
+            throw new ClassNotFoundException();
+        }
 
-        //2.将serviceName -> path 存放到map中
+        //3.将获得的服务提供方的ip地址存入内存
         String discover = null;
         try {
             discover = serviceDiscovery.discover(interfaceClazz.getName());
@@ -106,7 +79,7 @@ public class RpcConsumerBean implements ApplicationContextAware, FactoryBean<Obj
         pathMap.put(interfaceClazz.getName(),discover);
         Object consumerBean = create(interfaceClazz);
 
-        //3.将代理对象存入Spring容器中
+        //4.将代理对象存入Spring容器中
         return consumerBean;
     }
 

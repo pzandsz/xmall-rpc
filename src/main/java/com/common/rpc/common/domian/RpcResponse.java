@@ -11,6 +11,9 @@ import lombok.Data;
 @Data
 public class RpcResponse {
 
+    /** 状态码 */
+    private Integer code;
+
     /** 返回结果 */
     private Object result;
 

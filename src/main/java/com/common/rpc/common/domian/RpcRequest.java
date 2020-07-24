@@ -22,5 +22,11 @@ public class RpcRequest {
     /** 方法参数数组 */
     private Object[] parameters;
 
+    /** 代理的应用名称 通过proxy-interface获取服务提供方的ip地址 */
+    private String proxy;
+
+    /** 请求id */
+    private Long requestId;
+
     
 }
