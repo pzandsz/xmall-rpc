@@ -15,4 +15,6 @@
 
 7.尝试实现对象编码技术的可配置化
 
+8.尝试实现支持SpringBoot的自动配置
+@SpringBootApplication,@EnableAutoConfiguration  
 ...
