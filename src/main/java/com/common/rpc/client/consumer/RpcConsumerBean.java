@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class RpcConsumerBean implements ApplicationContextAware, FactoryBean<Object> {
 
-//    private AtomicBoolean startFlag = new AtomicBoolean();
     private String proxy;
     private String interfaceName;
     private Class<?> interfaceClazz;
