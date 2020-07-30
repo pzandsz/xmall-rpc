@@ -2,6 +2,8 @@ package com.common.rpc.client.handler;
 
 import com.common.rpc.common.domian.RpcRequest;
 import com.common.rpc.common.domian.RpcResponse;
+import com.common.rpc.common.log.Logger;
+import com.common.rpc.common.utils.StringUtils;
 import com.common.rpc.register.ServiceDiscovery;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -34,18 +36,18 @@ public class RpcInvocationHandler implements InvocationHandler {
         request.setParameters(args);
         // 获取 RPC 服务地址
         if (serviceAddress == null) {
-            log.error("service not registry");
+            Logger.ErrLog("service not registry");
             throw new RuntimeException("server address is empty");
         }
         // 从 RPC 服务地址中解析主机名与端口号
-        String[] array = serviceAddress.split(":");
+        String[] array = StringUtils.split(serviceAddress,":");
         String host = array[0];
         int port = Integer.parseInt(array[1]);
         // 创建 RPC 客户端对象并发送 RPC 请求
         RpcClientHandler client = new RpcClientHandler(host, port);
         long time = System.currentTimeMillis();
         RpcResponse response = client.send(request);
-        log.info("time: {}ms", System.currentTimeMillis() - time);
+        Logger.InfoLog("time: {" + (System.currentTimeMillis() - time) + "} ms");
         if (response == null) {
             throw new RuntimeException("response is null");
         }

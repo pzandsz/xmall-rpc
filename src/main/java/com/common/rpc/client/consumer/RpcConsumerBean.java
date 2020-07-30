@@ -26,8 +26,8 @@ public class RpcConsumerBean implements ApplicationContextAware, FactoryBean<Obj
     private String proxy;
     private String interfaceName;
     private Class<?> interfaceClazz;
-
     private String centerAddress;
+
 
 
 

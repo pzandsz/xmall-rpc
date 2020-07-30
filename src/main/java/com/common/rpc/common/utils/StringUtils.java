@@ -1,5 +1,7 @@
 package com.common.rpc.common.utils;
 
+import org.springframework.util.Assert;
+
 /**
  * 类说明: String工具类
  *
@@ -17,4 +19,10 @@ public class StringUtils {
     }
 
 
+
+    public static String[] split(String str,String regex){
+        Assert.notNull(str,"string is null");
+        String[] split = str.split(regex);
+        return split;
+    }
 }
