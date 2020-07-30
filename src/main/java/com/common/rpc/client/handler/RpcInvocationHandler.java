@@ -1,5 +1,6 @@
 package com.common.rpc.client.handler;
 
+import com.common.rpc.common.domian.Constants;
 import com.common.rpc.common.domian.RpcRequest;
 import com.common.rpc.common.domian.RpcResponse;
 import com.common.rpc.common.log.Logger;
@@ -40,7 +41,7 @@ public class RpcInvocationHandler implements InvocationHandler {
             throw new RuntimeException("server address is empty");
         }
         // 从 RPC 服务地址中解析主机名与端口号
-        String[] array = StringUtils.split(serviceAddress,":");
+        String[] array = StringUtils.split(serviceAddress, Constants.COLON);
         String host = array[0];
         int port = Integer.parseInt(array[1]);
         // 创建 RPC 客户端对象并发送 RPC 请求

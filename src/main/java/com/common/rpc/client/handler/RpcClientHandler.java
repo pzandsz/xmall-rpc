@@ -66,6 +66,7 @@ public class RpcClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
                 }
             });
             bootstrap.option(ChannelOption.TCP_NODELAY, true);
+
             // 连接 RPC 服务器
             ChannelFuture future = bootstrap.connect(host, port).sync();
             // 写入 RPC 请求数据并关闭连接
